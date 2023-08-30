@@ -1,0 +1,53 @@
+// Count of Data Sources by Type
+PurviewCustomLog
+| summarize Count=count() by dataSourceType
+| order by Count desc;
+
+// Classifications by Frequency
+PurviewCustomLog
+| extend classification = tostring(customDetails.classification)
+| summarize Count=count() by classification
+| order by Count desc;
+
+// Top Assets with Sensitive Data
+PurviewCustomLog
+| where customDetails.sensitivity == "High"
+| summarize Count=count() by assetName
+| order by Count desc
+| take 10;
+
+// Lineage Information for a Specific Data Source
+PurviewCustomLog
+| where dataSourceName == "SpecificDataSourceName"
+| project assetName, lineagePath;
+
+// Data Assets Without Classification
+PurviewCustomLog
+| where isnull(customDetails.classification)
+| project assetName, dataSourceType;
+
+// Distribution of Data Assets by Region
+PurviewCustomLog
+| summarize Count=count() by region
+| order by Count desc;
+
+// Top Users Accessing Data Assets
+PurviewCustomLog
+| summarize Count=count() by user
+| order by Count desc
+| take 10;
+
+// Data Assets By Modification Date
+PurviewCustomLog
+| extend modificationDate = todatetime(customDetails.modificationDate)
+| summarize Count=count() by bin(modificationDate, 1d);
+
+// Data Assets by Size
+PurviewCustomLog
+| extend size = todouble(customDetails.size)
+| summarize TotalSize=sum(size) by assetName
+| order by TotalSize desc;
+
+// Data Sources by Status
+PurviewCustomLog
+| summarize Count=count() by dataSourceStatus;
